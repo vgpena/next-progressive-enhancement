@@ -15,7 +15,7 @@ const sections = [
 
 function StaticAccordionSection({ title, body }) {
   return (
-    <div>
+    <div className={styles.static}>
       <h2>{title}</h2>
       <p>{body}</p>
     </div>

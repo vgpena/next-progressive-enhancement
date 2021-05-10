@@ -119,3 +119,20 @@
     flex-direction: column;
   }
 }
+
+.static {
+  animation-duration: 0.2s;
+  animation-name: fadeUp;
+}
+
+@keyframes fadeUp {
+  from {
+    display: none;
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+    display: block;
+  }
+}
