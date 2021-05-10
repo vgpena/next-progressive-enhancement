@@ -13,9 +13,7 @@ const sections = [
   },
 ];
 
-function StaticAccordionSection(props) {
-  const { title, body } = props;
-
+function StaticAccordionSection({ title, body }) {
   return (
     <div>
       <h2>{title}</h2>
@@ -79,7 +77,7 @@ function Accordion(props) {
             onClickTitle={handleClickTitle}
           />
         ) : (
-          StaticAccordionSection(section)
+          <StaticAccordionSection title={section.title} body={section.body} />
         )}
       </div>
     );
