@@ -1,5 +1,4 @@
 import Head from "next/head";
-// import Image from 'next/image'
 import styles from "../styles/Home.module.css";
 import { useEffect, useState } from "react";
 
@@ -17,8 +16,6 @@ const sections = [
 function StaticAccordionSection(props) {
   const { title, body } = props;
 
-  const [isExpanded, setIsExpanded] = useState(false);
-
   return (
     <div>
       <h2>{title}</h2>
@@ -28,15 +25,22 @@ function StaticAccordionSection(props) {
 }
 
 function DynamicAccordionSection(props) {
-  const { title, body } = props;
-  const [isExpanded, setIsExpanded] = useState(false);
+  const { title, body, isExpanded, index, onClickTitle } = props;
 
   return (
-    <div>
+    <div
+      style={{
+        minHeight: "2em",
+        border: "solid 1px cornflowerblue",
+        margin: ".5em 0",
+        width: "80vw",
+      }}
+    >
       <h2
         style={{ color: "tomato", cursor: "pointer" }}
         role="button"
-        onClick={() => setIsExpanded(!isExpanded)}
+        onClick={() => onClickTitle(index)}
+        tabIndex={0}
       >
         {title}
       </h2>
@@ -48,18 +52,35 @@ function DynamicAccordionSection(props) {
 function Accordion(props) {
   const { sections } = props;
   const [hasJS, setHasJS] = useState(false);
+  const [expandedSectionIndex, setExpandedSectionIndex] = useState(null);
 
   useEffect(() => {
     console.log("JS detected");
     setHasJS(true);
   }, []);
 
-  return sections.map((section) => {
+  function handleClickTitle(index) {
+    if (index === expandedSectionIndex) {
+      setExpandedSectionIndex(null);
+      return;
+    }
+    setExpandedSectionIndex(index);
+  }
+
+  return sections.map((section, index) => {
     return (
       <div key={section.title}>
-        {hasJS
-          ? DynamicAccordionSection(section)
-          : StaticAccordionSection(section)}
+        {hasJS ? (
+          <DynamicAccordionSection
+            title={section.title}
+            body={section.body}
+            isExpanded={expandedSectionIndex === index}
+            index={index}
+            onClickTitle={handleClickTitle}
+          />
+        ) : (
+          StaticAccordionSection(section)
+        )}
       </div>
     );
   });

@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build && next export",
-    "start": "next start"
+    "start": "next start",
+    "static": "yarn build && python3 -m http.server --directory=out"
   },
   "dependencies": {
     "next": "10.2.0",
