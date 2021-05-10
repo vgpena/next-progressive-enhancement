@@ -1,34 +1,21 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Next.js Progressive Enhancement Test
 
-## Getting Started
+Here's a small test case for progressive enhancement in a statically-rendered Next.js app. I wanted to see what Next.js output is like with JS turned off, and what we can do to swap in JS-reliant interactive UI components for their static, pure HTML counterparts.
 
-First, run the development server:
+In this example, I made a (very naïve) Accordion component which swaps out expanded-by-default, non-interactive sections for contracted-by-default, interactive ones.
 
-```bash
-npm run dev
-# or
-yarn dev
-```
+## Usage & Validation
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+This can only be validated from a static build of the website. Run `yarn static` to generate this build and start a simple server on `localhost:8000`. Toggle JS on and off in the browser settings, refreshing the page each time, to see the result.
 
-You can start editing the page by modifying `pages/index.js`. The page auto-updates as you edit the file.
+## Strategy
 
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.js`.
+The simplest way to perform this swap is to flag that we can use JS in a `useEffect` hook that runs once after the component renders. Then the accordion component re-renders with dynamic sections. (I was hoping I could sneak a `useLayoutEffect` in before the first render to prevent a FOUC, but no dice.)
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
+## Gotchas
+- *FOUC* - If JS is turned on, you may see a flash of unstyled content when the page loads. I added a CSS animation on the `StaticAccordionSection` component that makes the static element less likely to become visible before JS is loaded. (I don't really like this 🤔 I was really looking for some `componentWillMount` functionality, which apparently shouldn't be used anymore (and can't be used with function components anyway).)
+- *Hook Rendering Counter* - Currently, the `Accordion` keeps track of which section is open. My initial treatment of the `Accordion` had each section keep track of its own open/closed state. (The current version is more flexible and means I can programmatically control the open section, etc., but I was trying to go as absolutely naïve as possible to begin with.) With JS turned on, however, this triggered [Ye Olde "Rendered More Hooks Than During Previous Render" error](https://medium.com/@shanplourde/react-hooks-rendered-more-hooks-than-during-the-previous-render-d2c026d7cca3), since the hook-free `StaticAccordionSection` was rendered once, then the hook-using `DynamicAccordionSection`. I made the error go away by creating an unused hook _in_ the `StaticAccordionSection`, but this was clearly not the actual solution here.
 
-## Learn More
+---
+✨ This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).✨ 
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
